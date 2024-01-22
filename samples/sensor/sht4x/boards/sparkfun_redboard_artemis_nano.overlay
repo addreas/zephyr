@@ -1,0 +1,10 @@
+
+&iom2 {
+	status = "okay";
+	sht4x@44 {
+		status = "okay";
+		compatible = "sensirion,sht4x";
+		reg = <0x44>;
+		repeatability = <2>;
+	};
+};

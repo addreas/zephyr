@@ -68,6 +68,11 @@ static void i2c_ambiq_isr(const struct device *dev)
 	am_hal_iom_interrupt_clear(data->IOMHandle, ui32Status);
 	am_hal_iom_interrupt_service(data->IOMHandle, ui32Status);
 }
+#else
+static void i2c_ambiq_isr(const struct device *dev)
+{
+	LOG_ERR("i2c_ambiq_isr called");
+}
 #endif
 
 static int i2c_ambiq_read(const struct device *dev, struct i2c_msg *msg, uint16_t addr)
@@ -167,7 +172,7 @@ static int i2c_ambiq_transfer(const struct device *dev, struct i2c_msg *msgs, ui
 	}
 
 	/* Send out messages */
-	k_sem_take(&data->bus_sem, K_FOREVER);
+	// k_sem_take(&data->bus_sem, K_FOREVER);
 
 	for (int i = 0; i < num_msgs; i++) {
 		if (msgs[i].flags & I2C_MSG_READ) {
@@ -181,7 +186,7 @@ static int i2c_ambiq_transfer(const struct device *dev, struct i2c_msg *msgs, ui
 		}
 	}
 
-	k_sem_give(&data->bus_sem);
+	// k_sem_give(&data->bus_sem);
 
 	return 0;
 }

@@ -68,6 +68,11 @@ static void spi_ambiq_isr(const struct device *dev)
 	am_hal_iom_interrupt_clear(data->IOMHandle, ui32Status);
 	am_hal_iom_interrupt_service(data->IOMHandle, ui32Status);
 }
+#else
+static void spi_ambiq_isr(const struct device *dev) 
+{
+	LOG_ERR("spi_ambiq_isr called");
+}
 #endif
 
 static int spi_config(const struct device *dev, const struct spi_config *config)
@@ -261,12 +266,12 @@ static int spi_ambiq_transceive(const struct device *dev, const struct spi_confi
 	}
 
 	/* context setup */
-	spi_context_lock(&data->ctx, false, NULL, NULL, config);
+	// spi_context_lock(&data->ctx, false, NULL, NULL, config);
 
 	ret = spi_config(dev, config);
 
 	if (ret) {
-		spi_context_release(&data->ctx, ret);
+		// spi_context_release(&data->ctx, ret);
 		return ret;
 	}
 
@@ -274,7 +279,7 @@ static int spi_ambiq_transceive(const struct device *dev, const struct spi_confi
 
 	ret = spi_ambiq_xfer(dev, config);
 
-	spi_context_release(&data->ctx, ret);
+	// spi_context_release(&data->ctx, ret);
 
 	return ret;
 }
