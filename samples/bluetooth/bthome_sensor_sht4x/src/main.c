@@ -47,6 +47,8 @@ static struct bt_data ad[] = {
 	BT_DATA(BT_DATA_SVC_DATA16, service_data, ARRAY_SIZE(service_data))
 };
 
+static bool is_ready = false;
+
 static void bt_ready(int err)
 {
 	if (err) {
@@ -55,6 +57,7 @@ static void bt_ready(int err)
 	}
 
 	printk("Bluetooth initialized\n");
+	is_ready = true;
 
 	/* Start advertising */
 	err = bt_le_adv_start(ADV_PARAM, ad, ARRAY_SIZE(ad), NULL, 0);
@@ -85,6 +88,11 @@ int main(void)
 		return 0;
 	}
 
+	while (!is_ready) {
+		k_sleep(K_MSEC(100));
+		printk("Bluetooth not ready\n");
+	}
+
 	for (;;) {
 		if (sensor_sample_fetch(sht)) {
 			printf("Failed to fetch sample from SHT4X device\n");
@@ -109,7 +117,8 @@ int main(void)
 		if (err) {
 			printk("Failed to update advertising data (err %d)\n", err);
 		}
-		k_sleep(K_MSEC(BT_GAP_ADV_SLOW_INT_MIN));
+		// k_sleep(K_MSEC(BT_GAP_ADV_SLOW_INT_MIN));
+		k_sleep(K_MINUTES(1));
 	}
 	return 0;
 }
